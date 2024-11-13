@@ -72,4 +72,81 @@ public class WebDriverTest {
         Actions actions = new Actions(driver);
         actions.contextClick(contextMenuButton).perform();
     }
+
+
+    // ТЕСТЫ КЕЙСЫ ДЛЯ https://litecart.stqa.ru/en/
+
+    // Логин
+    @Test
+    public void checkLoginWithValidCredentialsTest () {
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://litecart.stqa.ru/en/");
+        // Заполняем форму для входа
+        WebElement emailField = driver.findElement(By.name("email"));
+        emailField.sendKeys("skrillex666@yandex.ru");
+        WebElement passwordField = driver.findElement(By.name("password"));
+        passwordField.sendKeys("passwordtest");
+        WebElement loginButton = driver.findElement(By.name("login"));
+        loginButton.click();
+        // Проверяем, что после входа мы находимся на главной странице
+        Assert.assertEquals(driver.getTitle(), "Online Store | My Store");
+        driver.quit();
+    }
+
+
+    @Test
+    public void checkLoginWithInvalidCredentialsTest () {
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://litecart.stqa.ru/en/");
+        WebElement emailField = driver.findElement(By.name("email"));
+        emailField.sendKeys("skrillex123@yandex.ru");
+        WebElement passwordField = driver.findElement(By.name("password"));
+        passwordField.sendKeys("passwordtest123");
+        WebElement loginButton = driver.findElement(By.name("login"));
+        loginButton.click();
+        Assert.assertEquals(driver.getTitle(), "Login | My Store");
+        driver.quit();
+    }
+
+
+    @Test
+    public void checkLostPasswordButtonTest () {
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://litecart.stqa.ru/en/");
+        WebElement emailField = driver.findElement(By.name("email"));
+        emailField.sendKeys("skrillex666@yandex.ru");
+        WebElement passwordField = driver.findElement(By.name("password"));
+        passwordField.sendKeys("passwordtest");
+        WebElement lostPasswordButton = driver.findElement(By.cssSelector("[name=lost_password]"));
+        lostPasswordButton.click();
+        // Проверяем, что перешли на страницу восстановления пароля
+        Assert.assertTrue(driver.getCurrentUrl().contains("login"));
+        driver.quit();
+    }
+
+
+    // Корзина
+    @Test
+    public void checkCartLinkTest () {
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://litecart.stqa.ru/en/");
+        WebElement cartLink = driver.findElement(By.cssSelector("#cart .content"));
+        cartLink.click();
+        Assert.assertEquals(driver.getTitle(), "Checkout | My Store");
+        driver.quit();
+    }
+
+    // Каталог
+    @Test
+    public void checkRubberDucksCatalogLinkTest () {
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://litecart.stqa.ru/en/");
+        // Находим ссылку на каталог "Rubber Ducks"
+        WebElement rubberDucksLink = driver.findElement(By.linkText("Rubber Ducks"));
+        rubberDucksLink.click();
+        // Проверяем, что название страницы соответствует ожиданиям
+        Assert.assertEquals(driver.getTitle(), "Rubber Ducks | My Store");
+//        driver.quit();
+    }
+
 }
