@@ -14,6 +14,9 @@ public class LoginPage {
     private By passwordField = By.name("password");
     private By loginButton = By.name("login");
     private By lostPasswordButton = By.cssSelector("[name=lost_password]");
+    private By logoutButton = By.cssSelector("a[href*='logout']");
+    private By errorMessage = By.cssSelector(".notice.errors");
+    private By successMessage = By.cssSelector(".notice.success");
 
     public void enterEmail(String email) {
         driver.findElement(emailField).sendKeys(email);
@@ -31,13 +34,27 @@ public class LoginPage {
         driver.findElement(lostPasswordButton).click();
     }
 
-    public String getPageTitle() {
-        return driver.getTitle();
+    public boolean errorMessageIsDisplayed (){
+        return driver.findElement(errorMessage).isDisplayed();
+    }
+
+    public boolean successMessageIsDisplayed (){
+        return driver.findElement(successMessage).isDisplayed();
+    }
+
+    public boolean logoutButtonIsDisplayed (){
+        return driver.findElement(logoutButton).isDisplayed();
     }
 
     public void login(String email, String password) {
         enterEmail(email);
         enterPassword(password);
         clickLogin();
+    }
+
+    public void clickCheckLostPasswordButton (String email, String password) {
+        enterEmail(email);
+        enterPassword(password);
+        clickLostPassword();
     }
 }

@@ -1,21 +1,18 @@
 package pageobject.object;
 
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 
 public class CartTest extends TestBase {
 
     @Test
-    public void checkCartLinkTest() {
-        WebDriver driver = new ChromeDriver();
-        driver.get("https://litecart.stqa.ru/en/");
-
-        MainPage mainPage = new MainPage(driver);
-        mainPage.goToCart();
-
+    public void checkThatCartIsEmptyTest() {
         CartPage cartPage = new CartPage(driver);
-        Assert.assertEquals("Checkout | My Store", cartPage.getPageTitle());
+        SoftAssert softAssert = new SoftAssert();
+        String massageWhenCartIsEmpty = "There are no items in your cart.";
+        cartPage.clicCartLink();
+        softAssert.assertTrue(cartPage.noItemsLabelIsDisplayed(), "Item label is not displayed.");
+        softAssert.assertEquals(cartPage.noItemsLabelGetText(), massageWhenCartIsEmpty);
+        softAssert.assertAll();
     }
 }
