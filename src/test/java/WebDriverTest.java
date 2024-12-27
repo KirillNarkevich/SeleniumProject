@@ -6,6 +6,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,13 +84,13 @@ public class WebDriverTest {
         driver.get("https://litecart.stqa.ru/en/");
         // Заполняем форму для входа
         WebElement emailField = driver.findElement(By.name("email"));
-        emailField.sendKeys("skrillex666@yandex.ru");
+        emailField.sendKeys("skrillex668@yandex.ru");
         WebElement passwordField = driver.findElement(By.name("password"));
         passwordField.sendKeys("passwordtest");
         WebElement loginButton = driver.findElement(By.name("login"));
         loginButton.click();
-        // Проверяем, что после входа мы находимся на главной странице
-        Assert.assertEquals(driver.getTitle(), "Online Store | My Store");
+        WebElement logoutButton = driver.findElement(By.cssSelector("a[href*='logout']"));
+        Assert.assertTrue(logoutButton.isDisplayed(), "Logout button is not displayed after login.");
         driver.quit();
     }
 
@@ -104,7 +105,8 @@ public class WebDriverTest {
         passwordField.sendKeys("passwordtest123");
         WebElement loginButton = driver.findElement(By.name("login"));
         loginButton.click();
-        Assert.assertEquals(driver.getTitle(), "Login | My Store");
+        WebElement errorMessage = driver.findElement(By.cssSelector(".notice.errors"));
+        Assert.assertTrue(errorMessage.isDisplayed(), "Error message is not displayed after invalid login.");
         driver.quit();
     }
 
@@ -119,20 +121,24 @@ public class WebDriverTest {
         passwordField.sendKeys("passwordtest");
         WebElement lostPasswordButton = driver.findElement(By.cssSelector("[name=lost_password]"));
         lostPasswordButton.click();
-        // Проверяем, что перешли на страницу восстановления пароля
-        Assert.assertTrue(driver.getCurrentUrl().contains("login"));
+        WebElement successMessage = driver.findElement(By.cssSelector(".notice.success"));
+        Assert.assertTrue(successMessage.isDisplayed(), "Success message is not displayed after clicking lost password button.");
         driver.quit();
     }
 
 
     // Корзина
     @Test
-    public void checkCartLinkTest () {
+    public void checkThatCartIsEmptyTest () {
         WebDriver driver = new ChromeDriver();
+        SoftAssert softAssert = new SoftAssert();
+        String massageWhenCartIsEmpty = "There are no items in your cart.";
         driver.get("https://litecart.stqa.ru/en/");
         WebElement cartLink = driver.findElement(By.cssSelector("#cart .content"));
         cartLink.click();
-        Assert.assertEquals(driver.getTitle(), "Checkout | My Store");
+        WebElement noItemsLabel = driver.findElement(By.tagName("em"));
+        softAssert.assertTrue(noItemsLabel.isDisplayed(), "Item label is not displayed.");
+        softAssert.assertEquals(noItemsLabel.getText(), massageWhenCartIsEmpty);
         driver.quit();
     }
 
@@ -144,9 +150,9 @@ public class WebDriverTest {
         // Находим ссылку на каталог "Rubber Ducks"
         WebElement rubberDucksLink = driver.findElement(By.linkText("Rubber Ducks"));
         rubberDucksLink.click();
-        // Проверяем, что название страницы соответствует ожиданиям
-        Assert.assertEquals(driver.getTitle(), "Rubber Ducks | My Store");
-//        driver.quit();
+        WebElement productList = driver.findElement(By.cssSelector(".listing-wrapper.products"));
+        Assert.assertTrue(productList.isDisplayed(), "Product list is not displayed on the Rubber Ducks page.");
+        driver.quit();
     }
 
 }
